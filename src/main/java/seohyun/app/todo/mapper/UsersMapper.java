@@ -7,9 +7,6 @@ import java.util.List;
 @Mapper
 public interface UsersMapper {
 
-//    @Delete("delete from product where id=#{id} and seller=#{seller}")
-//    int delete(String id, String seller);
-
     @Insert("insert into users (id, user_id, password, username, phone, email)" +
             "values (#{id}, #{userId}, #{password}, #{username}, #{phone}, #{email})")
     int create(Users users);

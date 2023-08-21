@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import seohyun.app.todo.mapper.TodoMapper;
 import seohyun.app.todo.model.Todo;
+import seohyun.app.todo.service.TodoService;
 import seohyun.app.todo.utils.Jwt;
 
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/v1/todo")
 public class TodoController {
+    private final TodoService todoService;
     private final TodoMapper todoMapper;
     private final Jwt jwt;
 
@@ -26,21 +28,9 @@ public class TodoController {
             @RequestHeader String authorization, @RequestBody Todo todo
             ) throws Exception {
         try{
-            Map<String, String> map = new HashMap<>();
-
             String decoded = jwt.VerifyToken(authorization);
-
-            UUID uuid = UUID.randomUUID();
-            todo.setId(uuid.toString());
-            todo.setUserId(decoded);
-            int result = todoMapper.create(todo);
-            if (result == 0) {
-                map.put("result", "failed");
-            }
-            else {
-                map.put("result", "success");
-            }
-            return new ResponseEntity<>(map, HttpStatus.OK);
+            Map<String, String> create = todoService.createTodo(todo, decoded);
+            return new ResponseEntity<>(create, HttpStatus.OK);
         } catch (Exception e){
             Map<String, String> map = new HashMap<>();
             map.put("error", e.toString());
@@ -51,9 +41,7 @@ public class TodoController {
     @GetMapping("/getalltodo")
     public ResponseEntity<Object> getAllTodo() throws Exception {
         try{
-            Map<String, String> map = new HashMap<>();
-
-            List<Todo> todoList = todoMapper.getAllTodo();
+            List<Todo> todoList = todoService.getAllTodo();
             return new ResponseEntity<>(todoList, HttpStatus.OK);
         } catch (Exception e) {
             Map<String, String> map = new HashMap<>();
@@ -67,18 +55,9 @@ public class TodoController {
             @RequestHeader String authorization, @RequestBody Todo todo
     ) throws Exception {
         try{
-            Map<String, String> map = new HashMap<>();
-
             String decoded = jwt.VerifyToken(authorization);
-
-            todo.setUserId(decoded);
-            int result = todoMapper.update(todo);
-            if (result == 0) {
-                map.put("result", "failed");
-            } else {
-                map.put("result", "success");
-            }
-            return new ResponseEntity<>(map, HttpStatus.OK);
+            Map<String, String> update = todoService.updateTodo(todo, decoded);
+            return new ResponseEntity<>(update, HttpStatus.OK);
         } catch (Exception e){
             Map<String, String> map = new HashMap<>();
             map.put("error", e.toString());
@@ -91,17 +70,9 @@ public class TodoController {
             @RequestHeader String authorization, @RequestParam String id
     ) throws Exception {
         try{
-            Map<String, String> map = new HashMap<>();
-
             String decoded = jwt.VerifyToken(authorization);
-
-            int result = todoMapper.delete(id, decoded);
-            if (result == 0) {
-                map.put("result", "failed");
-            } else {
-                map.put("result", "success");
-            }
-            return new ResponseEntity<>(map, HttpStatus.OK);
+            Map<String, String> delete = todoService.deleteTodo(id, decoded);
+            return new ResponseEntity<>(delete, HttpStatus.OK);
         } catch (Exception e){
             Map<String, String> map = new HashMap<>();
             map.put("error", e.toString());
