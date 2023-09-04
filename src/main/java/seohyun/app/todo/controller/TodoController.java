@@ -20,7 +20,6 @@ import java.util.UUID;
 @RequestMapping("/api/v1/todo")
 public class TodoController {
     private final TodoService todoService;
-    private final TodoMapper todoMapper;
     private final Jwt jwt;
 
     @PostMapping("/createtodo")
